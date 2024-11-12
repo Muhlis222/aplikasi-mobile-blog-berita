@@ -1,48 +1,45 @@
-import { Text, View, ScrollView, TouchableOpacity, StyleSheet, Image } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 export default function Index() {
-  // Static data for blog posts
-  const blogPosts = [
-    {
-      id: 1,
-      title: "How to Stay Productive While Working from Home",
-      date: "November 1, 2024",
-      description: "Working from home can be challenging. Here are some tips to stay productive...",
-      image: "https://via.placeholder.com/300x200",
-    },
-    {
-      id: 2,
-      title: "Top 10 Travel Destinations for 2024",
-      date: "October 29, 2024",
-      description: "Looking for your next travel destination? Check out these top spots...",
-      image: "https://via.placeholder.com/300x200",
-    },
-    {
-      id: 3,
-      title: "The Ultimate Guide to Healthy Eating",
-      date: "October 15, 2024",
-      description: "Healthy eating is key to a balanced lifestyle. Learn the basics here...",
-      image: "https://via.placeholder.com/300x200",
-    },
-  ];
+  const [dataPost, setDataPost] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://192.168.1.5:8000/api/posts');
+      const data = await response.json();
+      setDataPost(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.pageTitle}>News Blog</Text>
-      {blogPosts.map((post) => (
-        <View key={post.id} style={styles.card}>
-          <Image source={{ uri: post.image }} style={styles.image} />
-          <View style={styles.content}>
-            <Text style={styles.title}>{post.title}</Text>
-            <Text style={styles.date}>{post.date}</Text>
-            <Text style={styles.description} numberOfLines={3}>{post.description}</Text>
-            <TouchableOpacity style={styles.readMoreButton} onPress={() => alert("Read more about: " + post.title)}>
-              <Text style={styles.readMoreText}>Read More</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ))}
+    <ScrollView>
+      <View style={styles.container}>
+        {dataPost ? (
+          dataPost.map((post, key) => (
+            <View key={key} style={styles.card}>
+              <Text style={styles.title}>{post.title}</Text>
+              <Text style={styles.slug}>{post.slug}</Text>
+              <Text style={styles.description}>{post.description}</Text>
+              <Text style={styles.body}>{post.body}</Text>
+              <Text style={styles.image}>{post.image}</Text>
+              <Text style={styles.status}>{post.status}</Text>
+              <TouchableOpacity style={styles.readMoreButton}>
+                <Text style={styles.readMoreText}>Read More</Text>
+              </TouchableOpacity>
+            </View>
+          ))
+        ) : (
+          <ActivityIndicator size="large" color="#007bff" />
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -50,62 +47,69 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f2f5",
-  },
-  pageTitle: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginVertical: 16,
+    backgroundColor: "#f8f9fa",
+    padding: 16,
+    marginTop: 20,
   },
   card: {
-    backgroundColor: "#fff",
-    marginBottom: 16,
-    marginHorizontal: 16,
+    backgroundColor: "#ffffff",
+    padding: 20,
     borderRadius: 10,
-    overflow: "hidden",
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    resizeMode: "cover",
-  },
-  content: {
-    padding: 16,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: "#eaeaea",
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  date: {
-    fontSize: 12,
-    color: "#888",
+  slug: {
+    fontSize: 14,
+    color: "#777",
     marginBottom: 8,
+    fontStyle: "italic",
   },
   description: {
     fontSize: 16,
     color: "#555",
-    marginBottom: 12,
+    marginBottom: 10,
+    lineHeight: 24,
+  },
+  body: {
+    fontSize: 15,
+    color: "#444",
+    marginBottom: 8,
     lineHeight: 22,
+  },
+  image: {
+    fontSize: 12,
+    color: "#999",
+    marginBottom: 8,
+  },
+  status: {
+    fontSize: 14,
+    color: "#28a745",
+    fontWeight: "bold",
+    marginBottom: 12,
   },
   readMoreButton: {
     alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: "#007bff",
     borderRadius: 5,
+    marginTop: 10,
   },
   readMoreText: {
-    fontSize: 14,
-    color: "#fff",
+    fontSize: 15,
+    color: "#ffffff",
     fontWeight: "600",
   },
 });
