@@ -6,7 +6,7 @@ export default function Index() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://192.168.1.5:8000/api/posts');
+      const response = await fetch('http://11.11.15.234:8000/api/posts');
       const data = await response.json();
       setDataPost(data);
       console.log(data);

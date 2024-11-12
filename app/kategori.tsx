@@ -1,77 +1,186 @@
-import { Text, View, StyleSheet, TouchableOpacity, FlatList } from "react-native";
-import React from "react";
-import Icon from "react-native-vector-icons/FontAwesome"; // Make sure to install react-native-vector-icons
+// import { Text, View, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+// import React from "react";
+// import Icon from "react-native-vector-icons/FontAwesome"; // Make sure to install react-native-vector-icons
 
-export default function Rekomendasi() {
-    // Static data for recommendation icons and topics
-    const recommendations = [
-        { id: 1, title: "Technology", icon: "laptop" },
-        { id: 2, title: "Health", icon: "heartbeat" },
-        { id: 3, title: "Travel", icon: "plane" },
-        { id: 4, title: "Education", icon: "book" },
-        { id: 5, title: "Finance", icon: "dollar" },
-        { id: 6, title: "Sports", icon: "soccer-ball-o" },
-        { id: 7, title: "Lifestyle", icon: "leaf" },
-        { id: 8, title: "Entertainment", icon: "film" },
-    ];
+// export default function Rekomendasi() {
+//     // Static data for recommendation icons and topics
+//     const recommendations = [
+//         { id: 1, title: "Technology", icon: "laptop" },
+//         { id: 2, title: "Health", icon: "heartbeat" },
+//         { id: 3, title: "Travel", icon: "plane" },
+//         { id: 4, title: "Education", icon: "book" },
+//         { id: 5, title: "Finance", icon: "dollar" },
+//         { id: 6, title: "Sports", icon: "soccer-ball-o" },
+//         { id: 7, title: "Lifestyle", icon: "leaf" },
+//         { id: 8, title: "Entertainment", icon: "film" },
+//     ];
 
-    const renderRecommendation = ({ item }) => (
-        <TouchableOpacity style={styles.iconContainer} onPress={() => alert("Selected: " + item.title)}>
-            <Icon name={item.icon} size={40} color="#007bff" style={styles.icon} />
-            <Text style={styles.iconLabel}>{item.title}</Text>
-        </TouchableOpacity>
-    );
+//     const renderRecommendation = ({ item }) => (
+//         <TouchableOpacity style={styles.iconContainer} onPress={() => alert("Selected: " + item.title)}>
+//             <Icon name={item.icon} size={40} color="#007bff" style={styles.icon} />
+//             <Text style={styles.iconLabel}>{item.title}</Text>
+//         </TouchableOpacity>
+//     );
+
+//     return (
+//         <View style={styles.container}>
+//             <Text style={styles.pageTitle}>Recommended Topics</Text>
+//             <FlatList
+//                 data={recommendations}
+//                 renderItem={renderRecommendation}
+//                 keyExtractor={(item) => item.id.toString()}
+//                 numColumns={2}
+//                 contentContainerStyle={styles.grid}
+//             />
+//         </View>
+//     );
+// }
+
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         backgroundColor: "#f0f2f5",
+//         paddingTop: 20,
+//     },
+//     pageTitle: {
+//         fontSize: 26,
+//         fontWeight: "bold",
+//         color: "#333",
+//         textAlign: "center",
+//         marginBottom: 20,
+//     },
+//     grid: {
+//         paddingHorizontal: 16,
+//     },
+//     iconContainer: {
+//         flex: 1,
+//         alignItems: "center",
+//         justifyContent: "center",
+//         padding: 20,
+//         margin: 10,
+//         backgroundColor: "#fff",
+//         borderRadius: 12,
+//         shadowColor: "#000",
+//         shadowOffset: { width: 0, height: 4 },
+//         shadowOpacity: 0.1,
+//         shadowRadius: 8,
+//         elevation: 4,
+//     },
+//     icon: {
+//         marginBottom: 8,
+//     },
+//     iconLabel: {
+//         fontSize: 16,
+//         color: "#333",
+//         fontWeight: "500",
+//     },
+// });
+
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+
+export default function Index() {
+    const [dataKategori, setDataKategori] = useState(null);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch('http://11.11.15.234:8000/api/categories');
+            const data = await response.json();
+            setDataKategori(data);
+            console.log(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.pageTitle}>Recommended Topics</Text>
-            <FlatList
-                data={recommendations}
-                renderItem={renderRecommendation}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                contentContainerStyle={styles.grid}
-            />
-        </View>
+        <ScrollView>
+            <View style={styles.container}>
+                {dataKategori ? (
+                    dataKategori.map((kategori, key) => (
+                        <View key={key} style={styles.card}>
+                            <Text style={styles.title}>{kategori.nama}</Text>
+                            <Text style={styles.slug}>{kategori.slug}</Text>
+                        </View>
+                    ))
+                ) : (
+                    <ActivityIndicator size="large" color="#007bff" />
+                )}
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f0f2f5",
-        paddingTop: 20,
+        backgroundColor: "#f8f9fa",
+        padding: 16,
+        marginTop: 20,
     },
-    pageTitle: {
-        fontSize: 26,
+    card: {
+        backgroundColor: "#ffffff",
+        padding: 20,
+        borderRadius: 10,
+        marginBottom: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 4,
+        borderWidth: 1,
+        borderColor: "#eaeaea",
+    },
+    title: {
+        fontSize: 22,
         fontWeight: "bold",
         color: "#333",
-        textAlign: "center",
-        marginBottom: 20,
+        marginBottom: 6,
     },
-    grid: {
-        paddingHorizontal: 16,
+    slug: {
+        fontSize: 14,
+        color: "#777",
+        marginBottom: 8,
+        fontStyle: "italic",
     },
-    iconContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 20,
-        margin: 10,
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
+    description: {
+        fontSize: 16,
+        color: "#555",
+        marginBottom: 10,
+        lineHeight: 24,
     },
-    icon: {
+    body: {
+        fontSize: 15,
+        color: "#444",
+        marginBottom: 8,
+        lineHeight: 22,
+    },
+    image: {
+        fontSize: 12,
+        color: "#999",
         marginBottom: 8,
     },
-    iconLabel: {
-        fontSize: 16,
-        color: "#333",
-        fontWeight: "500",
+    status: {
+        fontSize: 14,
+        color: "#28a745",
+        fontWeight: "bold",
+        marginBottom: 12,
+    },
+    readMoreButton: {
+        alignSelf: "flex-start",
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        backgroundColor: "#007bff",
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    readMoreText: {
+        fontSize: 15,
+        color: "#ffffff",
+        fontWeight: "600",
     },
 });
