@@ -1,37 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons'
+import Home from './index'
+import Kategori from './kategori'
+import Rekomendasi from './rekomendasi'
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+const Tab = createBottomTabNavigator()
+const Stack = createStackNavigator();
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen name="Home" component={Home} options={{ tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} /> }} />
+        <Tab.Screen name="Rekomendasi" component={Rekomendasi} options={{ tabBarIcon: ({ color }) => <Ionicons name="heart" size={24} color={color} /> }} />
+        <Tab.Screen name="Kategori" component={Kategori} options={{ tabBarIcon: ({ color }) => <Ionicons name="list" size={24} color={color} /> }} />
+      </Tab.Navigator>
+    </NavigationContainer >
+  )
 }
+
